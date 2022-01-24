@@ -1,8 +1,10 @@
 const express = require("express");
 const { MongoClient } = require('mongodb');
+const ObjectId = require("mongodb").ObjectId;
 const app = express();
 const port = process.env.PORT || 5000;
 const cors = require("cors");
+const res = require("express/lib/response");
 require("dotenv").config();
 
 app.use(cors());
@@ -29,7 +31,18 @@ async function run() {
             res.send(result);
         })
 
-        console.log(uri);
+        app.post('/food/cart', async (req, res) => {
+            const body = req.body.ids
+            let product = [];
+            for (const id of body) {
+                const query = { _id: ObjectId(id) };
+                const result = await foodCollection.findOne(query);
+                product.push(result);
+
+            }
+            res.json(product);
+            console.log(product);
+        })
 
 
     } finally {
